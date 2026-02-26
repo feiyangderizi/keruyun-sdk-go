@@ -72,15 +72,16 @@ type DishPageResp struct {
 	Value struct {
 		Total    int `json:"total"` // 数据总数
 		DataList []struct {
-			DishId     string `json:"dishId"`     // 菜品ID
-			DishName   string `json:"dishName"`   // 菜品名称
-			DishDesc   string `json:"dishDesc"`   // 菜品描述
-			CategoryId string `json:"categoryId"` // 分类ID
-			Sort       int    `json:"sort"`       // 排序值
-			HelpCode   string `json:"helpCode"`   // 助记码
-			DishType   string `json:"dishType"`   // 菜品类型， SINGLE：单菜 ，COMBO：套餐， SIDE：配料
-			State      string `json:"state"`      // 菜品状态
-			WeighFlag  string `json:"weighFlag"`  // 称重菜标识, Y:是，N:否
+			DishId           string   `json:"dishId"`           // 菜品ID
+			DishName         string   `json:"dishName"`         // 菜品名称
+			DishDesc         string   `json:"dishDesc"`         // 菜品描述
+			CategoryId       string   `json:"categoryId"`       // 分类ID
+			Sort             int      `json:"sort"`             // 排序值
+			HelpCode         string   `json:"helpCode"`         // 助记码
+			DishType         string   `json:"dishType"`         // 菜品类型， SINGLE：单菜 ，COMBO：套餐， SIDE：配料
+			State            string   `json:"state"`            // 菜品状态
+			WeighFlag        string   `json:"weighFlag"`        // 称重菜标识, Y:是，N:否
+			DishImageUrlList []string `json:"dishImageUrlList"` //菜品图片列表
 		} `json:"dataList"` // 具体数据
 	} `json:"value"` // 业务结果
 	Success    string `json:"success"`    // 是否成功, true:成功，false:失败
@@ -131,6 +132,7 @@ type DishDetailResp struct {
 				Sort          int    `json:"sort"`          //排序号
 			} `json:"comboGroupDetailList"` //套餐分组子菜列表
 			GroupType string `json:"groupType"` //套餐组类型（FIXED:固定，OPTIONAL:可选）
+			GroupId   string `json:"groupId"`
 		} `json:"comboGroupList"` //菜品为套餐时的套餐分组信息
 		ComboPriceIncludeChildDishSideDishPrice   string   `json:"comboPriceIncludeChildDishSideDishPrice"`   //套餐价格是否包含子菜加料价格， Y:是；N:否
 		ComboPriceIncludeChildDishCookingWayPrice string   `json:"comboPriceIncludeChildDishCookingWayPrice"` //套餐价格是否包含子菜做法价格, Y:是；N:否
@@ -167,10 +169,10 @@ type DishDetailResp struct {
 		SpicyLevel        int      `json:"spicyLevel"`       //辣度等级
 		Sort              int      `json:"sort"`             //排序值
 		DishStockInfoList []struct {
-			DishId          string `json:"dishId"`          //菜品SPU ID
-			SkuId           string `json:"skuId"`           //菜品SKU ID
-			ResidualDecimal int64  `json:"residualDecimal"` //剩余售卖量
-			SoldOutFlag     string `json:"soldOutFlag"`     //是否售罄（Y：售罄，N：未售罄）
+			DishId          string  `json:"dishId"`          //菜品SPU ID
+			SkuId           string  `json:"skuId"`           //菜品SKU ID
+			ResidualDecimal float64 `json:"residualDecimal"` //剩余售卖量
+			SoldOutFlag     string  `json:"soldOutFlag"`     //是否售罄（Y：售罄，N：未售罄）
 		} `json:"dishStockInfoList"` //菜品库存信息列表
 		UnitId string `json:"unitId"` //菜品单位ID
 	} `json:"value"` //业务数据
@@ -205,6 +207,19 @@ type CrmCreateResp struct {
 	MessageId  string `json:"messageId"`  // 服务消息ID
 }
 
+type CrmUpdateResp struct {
+	Code        int    `json:"code"`
+	Message     string `json:"message"`
+	MessageUuid string `json:"messageUuid"`
+	Result      struct {
+		CustomerId string `json:"customerId"`
+		Success    string `json:"success"`
+		BizMessage string `json:"bizMessage"`
+		ServerCode int    `json:"serverCode"`
+		MessageId  string `json:"messageId"`
+	} `json:"result"`
+}
+
 type CrmCustomerInfoResp struct {
 	Data struct {
 		Birthday   string `json:"birthday"`   // 生日日期,yyyy-MM-dd格式
@@ -221,6 +236,36 @@ type CrmCustomerInfoResp struct {
 	Success    bool   `json:"success"`    // 请求请求结果, true代表成功, false代表失败
 	ServerCode int    `json:"serverCode"` // 服务编码
 	MessageId  string `json:"messageId"`  // 服务消息ID
+}
+
+type CrmCustomerIdsResp struct {
+	List       []Customer `json:"list"`
+	Success    bool       `json:"success"`
+	BizMessage string     `json:"bizMessage"`
+	ServerCode string     `json:"serverCode"`
+	MessageId  string     `json:"messageId"`
+}
+
+type Customer struct {
+	Birthday   int64 `json:"birthday"`
+	Gender     int   `json:"gender"`
+	MemberTime int64 `json:"memberTime"`
+	LevelDTO   struct {
+		LevelId   string `json:"levelId"`
+		LevelNo   int    `json:"levelNo"`
+		LevelName string `json:"levelName"`
+	} `json:"levelDTO"`
+	Remark       string `json:"remark"`
+	CustomerType int    `json:"customerType"`
+	CustomerId   string `json:"customerId"`
+	State        int    `json:"state"`
+	Email        string `json:"email"`
+	CustomerTime int64  `json:"customerTime"`
+	Address      string `json:"address"`
+	Mobile       string `json:"mobile"`
+	Name         string `json:"name"`
+	Growth       string `json:"growth"`
+	Invoice      string `json:"invoice"`
 }
 
 type CrmCustomerPropertyResp struct {
@@ -285,6 +330,203 @@ type CrmDirectChargeResp struct {
 	} `json:"data"` // 业务数据
 	ServerCode int    `json:"serverCode"` // 服务编码
 	MessageId  string `json:"messageId"`  // 服务消息ID
+}
+
+type CrmTemplateListResp struct {
+	Result     []CouponTemplate `json:"result"`
+	TotalSize  int              `json:"totalSize"`
+	Success    bool             `json:"success"`
+	MsgInfo    string           `json:"msgInfo"`
+	MsgCode    string           `json:"msgCode"`
+	ServerCode int              `json:"serverCode"`
+	MessageId  string           `json:"messageId"`
+}
+
+// CouponTemplate 是 result 数组中的单个元素
+type CouponTemplate struct {
+	MinChargeType      string   `json:"minChargeType"`
+	UnavailableTime    string   `json:"unavailableTime"` // 这里是嵌套的JSON字符串
+	Inventory          int      `json:"inventory"`
+	Type               string   `json:"type"`
+	MinCharge          int      `json:"minCharge"`
+	AvailableTime      string   `json:"availableTime"` // 这里是嵌套的JSON字符串
+	EffectiveAfterDays string   `json:"effectiveAfterDays"`
+	ValidDayCount      int      `json:"validDayCount"`
+	StartTime          int64    `json:"startTime"`
+	Id                 string   `json:"id"`
+	UserLimit          int      `json:"userLimit"`
+	ShopCoverage       string   `json:"shopCoverage"`
+	ValidDateType      string   `json:"validDateType"`
+	ItemCoverage       string   `json:"itemCoverage"`
+	Instruction        string   `json:"instruction"`
+	UseChannels        []string `json:"useChannels"`
+	Name               string   `json:"name"`
+	EndTime            int64    `json:"endTime"`
+	Status             string   `json:"status"`
+}
+
+type CrmTemplateInfoResp struct {
+	Data       InfoCouponTemplate `json:"data"`
+	Success    bool               `json:"success"`
+	MsgInfo    string             `json:"msgInfo"`
+	MsgCode    string             `json:"msgCode"`
+	ServerCode int                `json:"serverCode"`
+	MessageId  string             `json:"messageId"`
+}
+
+type InfoCouponTemplate struct {
+	CouponTemplate
+	DiscountSetting struct {
+		Discount string `json:"discount"`
+	} `json:"discountSetting"`
+	GiftSetting struct {
+		ExchangeType string `json:"exchangeType"`
+		Type         int    `json:"type"`
+		Name         string `json:"name"`
+		Cost         int64  `json:"cost"` // 使用指针类型，因为JSON中可能为null
+	} `json:"giftSetting"`
+	BoughtGiftSetting struct {
+		ExchangeRuleType string `json:"exchangeRuleType"`
+		ItemBoughtNum    int    `json:"itemBoughtNum"`
+		ItemExchangeNum  int    `json:"itemExchangeNum"`
+		LimitDiscountNum int    `json:"limitDiscountNum"`
+	} `json:"boughtGiftSetting"`
+	ConditionDiscountSetting struct {
+		ItemBoughtNum    int    `json:"itemBoughtNum"`
+		Discount         int    `json:"discount"`
+		ExchangeItemType string `json:"exchangeItemType"`
+	} `json:"conditionDiscountSetting"`
+	CashSetting struct {
+		Denomination int `json:"denomination"`
+	} `json:"cashSetting"`
+}
+
+type CrmTemplateShopResp struct {
+	Result     []ShopInfo `json:"result"`
+	TotalSize  int        `json:"totalSize"`
+	MsgInfo    string     `json:"msgInfo"`
+	MsgCode    string     `json:"msgCode"`
+	ServerCode int        `json:"serverCode"`
+	MessageId  string     `json:"messageId"`
+	Success    bool       `json:"success"`
+}
+type ShopInfo struct {
+	ShopId string `json:"shopId"`
+}
+
+type CrmTemplateDishResp struct {
+	Result     []DishInfo `json:"result"`
+	TotalSize  int        `json:"totalSize"`
+	Success    bool       `json:"success"`
+	MsgInfo    string     `json:"msgInfo"`
+	MsgCode    string     `json:"msgCode"`
+	ServerCode int        `json:"serverCode"`
+	MessageId  string     `json:"messageId"`
+}
+
+type DishInfo struct {
+	ItemId        string `json:"itemId"`
+	ItemApplyType string `json:"itemApplyType"`
+	ItemType      string `json:"itemType"`
+	DishId        string `json:"dishId"`
+}
+
+type CrmCouponSendResp struct {
+	Data struct {
+		ResourceCode string `json:"resourceCode"`
+	} `json:"data"`
+	Success    bool   `json:"success"`
+	MsgInfo    string `json:"msgInfo"`
+	MsgCode    string `json:"msgCode"`
+	ServerCode int    `json:"serverCode"`
+	MessageId  string `json:"messageId"`
+}
+
+type CrmCouponInvalidResp struct {
+	Data struct {
+		Result bool `json:"result"`
+	} `json:"data"`
+	Success    bool   `json:"success"`
+	MsgInfo    string `json:"msgInfo"`
+	MsgCode    string `json:"msgCode"`
+	ServerCode int    `json:"serverCode"`
+	MessageId  string `json:"messageId"`
+}
+
+type CrmCouponQueryResp struct {
+	Result     []TemplateInfo `json:"result"`
+	TotalSize  int            `json:"totalSize"`
+	Success    bool           `json:"success"`
+	MsgInfo    string         `json:"msgInfo"`
+	MsgCode    string         `json:"msgCode"`
+	ServerCode int            `json:"serverCode"`
+	MessageId  string         `json:"messageId"`
+}
+
+type TemplateInfo struct {
+	TemplateType string `json:"templateType"`
+	ResourceCode string `json:"resourceCode"`
+	TemplateName string `json:"templateName"`
+	GmtCreated   int64  `json:"gmtCreated"`
+	StartTime    int64  `json:"startTime"`
+	EndTime      int64  `json:"endTime"`
+	TemplateId   string `json:"templateId"`
+	Status       string `json:"status"`
+}
+
+type CrmCouponInfoResp struct {
+	Data       Data   `json:"data"`
+	Success    bool   `json:"success"`
+	MsgInfo    string `json:"msgInfo"`
+	MsgCode    string `json:"msgCode"`
+	ServerCode int    `json:"serverCode"`
+	MessageId  string `json:"messageId"`
+}
+
+type Data struct {
+	ResourceCode    string          `json:"resourceCode"`
+	GmtCreated      int64           `json:"gmtCreated"`
+	StartTime       int64           `json:"startTime"`
+	VoucherTemplate VoucherTemplate `json:"voucherTemplate"`
+	EndTime         int64           `json:"endTime"`
+	Status          string          `json:"status"`
+}
+type VoucherTemplate struct {
+	MinChargeType   string   `json:"minChargeType"`
+	ItemCoverage    string   `json:"itemCoverage"`
+	Type            string   `json:"type"`
+	MinCharge       int      `json:"minCharge"`
+	AvailableTime   string   `json:"availableTime"` // 嵌套JSON字符串
+	Instruction     string   `json:"instruction"`
+	UseChannels     []string `json:"useChannels"`
+	Name            string   `json:"name"`
+	ID              string   `json:"id"`
+	Status          string   `json:"status"`
+	ShopCoverage    string   `json:"shopCoverage"`
+	DiscountSetting struct {
+		Discount string `json:"discount"`
+	} `json:"discountSetting"`
+	GiftSetting struct {
+		ExchangeType string  `json:"exchangeType"`
+		Type         int     `json:"type"`
+		Name         string  `json:"name"`
+		Cost         *string `json:"cost,omitempty"`
+	} `json:"giftSetting"`
+	BoughtGiftSetting struct {
+		ExchangeRuleType string `json:"exchangeRuleType"`
+		ItemBoughtNum    int    `json:"itemBoughtNum"`
+		ItemExchangeNum  int    `json:"itemExchangeNum"`
+		LimitDiscountNum int    `json:"limitDiscountNum"`
+	} `json:"boughtGiftSetting"`
+	ConditionDiscountSetting struct {
+		ItemBoughtNum    int    `json:"itemBoughtNum"`
+		Discount         int    `json:"discount"`
+		ExchangeItemType string `json:"exchangeItemType"`
+	} `json:"conditionDiscountSetting"`
+	CashSetting struct {
+		Denomination int `json:"denomination"`
+	} `json:"cashSetting"`
+	UnavailableTime string `json:"unavailableTime"` // 嵌套JSON字符串
 }
 
 type OrderDetailResp struct {
@@ -356,31 +598,31 @@ type OrderDetailResp struct {
 			ItemPromoApportionAmt string `json:"itemPromoApportionAmt"` // 商品优惠分摊
 			ItemReceivedAmt       string `json:"itemReceivedAmt"`       // 商品收入
 			Children              []struct {
-				ItemType              string        `json:"itemType"`
-				GiftFlag              bool          `json:"giftFlag"`
-				WeighFlag             bool          `json:"weighFlag"`
-				TempFlag              bool          `json:"tempFlag"`
-				PromoFlag             bool          `json:"promoFlag"`
-				BigTypeName           string        `json:"bigTypeName"`
-				ItemCode              string        `json:"itemCode"`
-				ItemName              string        `json:"itemName"`
-				SaleStatusType        string        `json:"saleStatusType"`
-				SaleStatusTypeCode    string        `json:"saleStatusTypeCode"`
-				Id                    string        `json:"id"`
-				ParentId              string        `json:"parentId"`
-				ItemId                string        `json:"itemId"`
-				ItemSkuId             string        `json:"itemSkuId"`
-				ProductionDeptId      string        `json:"productionDeptId"`
-				UnitName              string        `json:"unitName"`
-				SpecNameConcat        string        `json:"specNameConcat"`
-				ItemPrice             string        `json:"itemPrice"`
-				SalePrice             string        `json:"salePrice"`
-				PracticeVoList        []interface{} `json:"practiceVoList"`
-				Quantity              string        `json:"quantity"`
-				ItemSaleAmt           string        `json:"itemSaleAmt"`
-				ExtraFeeApportionAmt  string        `json:"extraFeeApportionAmt"`
-				ItemPromoApportionAmt string        `json:"itemPromoApportionAmt"`
-				ItemReceivedAmt       string        `json:"itemReceivedAmt"`
+				ItemType              string `json:"itemType"`
+				GiftFlag              bool   `json:"giftFlag"`
+				WeighFlag             bool   `json:"weighFlag"`
+				TempFlag              bool   `json:"tempFlag"`
+				PromoFlag             bool   `json:"promoFlag"`
+				BigTypeName           string `json:"bigTypeName"`
+				ItemCode              string `json:"itemCode"`
+				ItemName              string `json:"itemName"`
+				SaleStatusType        string `json:"saleStatusType"`
+				SaleStatusTypeCode    string `json:"saleStatusTypeCode"`
+				Id                    string `json:"id"`
+				ParentId              string `json:"parentId"`
+				ItemId                string `json:"itemId"`
+				ItemSkuId             string `json:"itemSkuId"`
+				ProductionDeptId      string `json:"productionDeptId"`
+				UnitName              string `json:"unitName"`
+				SpecNameConcat        string `json:"specNameConcat"`
+				ItemPrice             any    `json:"itemPrice"`
+				SalePrice             any    `json:"salePrice"`
+				PracticeVoList        []any  `json:"practiceVoList"`
+				Quantity              any    `json:"quantity"`
+				ItemSaleAmt           any    `json:"itemSaleAmt"`
+				ExtraFeeApportionAmt  any    `json:"extraFeeApportionAmt"`
+				ItemPromoApportionAmt any    `json:"itemPromoApportionAmt"`
+				ItemReceivedAmt       any    `json:"itemReceivedAmt"`
 			} `json:"children"` // 子节点
 		} `json:"orderItemVoList"` // 菜品明细
 		OpenOrderPromoVoList []struct {
@@ -764,4 +1006,736 @@ type OrgQueryResp struct {
 	} `json:"data"` // 接口返回数据体
 	ServerCode int    `json:"serverCode"` // 服务编码
 	MessageId  string `json:"messageId"`  // 服务消息ID
+}
+
+type BookQueryResponse struct {
+	Data []struct {
+		PeriodId   string `json:"periodId"`
+		PeriodName string `json:"periodName"`
+		StartTime  string `json:"startTime"`
+		EndTime    string `json:"endTime"`
+	} `json:"data"`
+	MessageId  string `json:"messageId"`
+	ServerCode int    `json:"serverCode"`
+}
+
+type BookSaveResp struct {
+	Code        int    `json:"code"`
+	Message     string `json:"message"`
+	MessageUuid string `json:"messageUuid"`
+	Result      struct {
+		BookOrderNo string `json:"bookOrderNo"`
+		ReqId       string `json:"reqId"`
+		Code        string `json:"code"`
+		Msg         string `json:"msg"`
+		Success     string `json:"success"`
+		MsgCode     string `json:"msgCode"`
+		MsgInfo     string `json:"msgInfo"`
+		MessageId   string `json:"messageId"`
+		ServerCode  int    `json:"serverCode"`
+	} `json:"result"`
+}
+
+type BookQueryPeriodTimeResp struct {
+	Data []struct {
+		PeriodId   string `json:"periodId"`
+		PeriodName string `json:"periodName"`
+		StartTime  string `json:"startTime"`
+		EndTime    string `json:"endTime"`
+	} `json:"data"`
+	MessageId  string `json:"messageId"`
+	ServerCode int    `json:"serverCode"`
+}
+
+type BookQueryOrderResp struct {
+	MessageId      string `json:"messageId"`
+	CreateId       string `json:"createId"`
+	CreatorName    string `json:"creatorName"`
+	UpdateId       string `json:"updateId"`
+	UpdateName     string `json:"updateName"`
+	OrderNo        string `json:"orderNo"`
+	DinnerTime     string `json:"dinnerTime"`
+	TableNum       int    `json:"tableNum"`
+	DinerNum       int    `json:"dinerNum"`
+	CustomerName   string `json:"customerName"`
+	CustomerSex    string `json:"customerSex"`
+	CustomerPhone  string `json:"customerPhone"`
+	OutBizNo       string `json:"outBizNo"`
+	BusinessType   string `json:"businessType"`
+	Note           string `json:"note"`
+	Status         string `json:"status"`
+	BookingCnt     int    `json:"bookingCnt"`
+	CancelCnt      int    `json:"cancelCnt"`
+	OverdueCnt     int    `json:"overdueCnt"`
+	GmtCreate      string `json:"gmtCreate"`
+	Source         string `json:"source"`
+	SourceName     string `json:"sourceName"`
+	PeriodTimeList []struct {
+		PeriodId   string `json:"periodId"`
+		PeriodName string `json:"periodName"`
+		StartTime  string `json:"startTime"`
+		EndTime    string `json:"endTime"`
+	} `json:"periodTimeList"`
+	CancelReasonDto struct {
+		Id            string `json:"id"`
+		ReasonContent string `json:"reasonContent"`
+	} `json:"cancelReasonDto"`
+	OpenInfoDto struct {
+		OpenSourceId   string `json:"openSourceId"`
+		OpenSourceName string `json:"openSourceName"`
+	} `json:"openInfoDto"`
+	TableRecordList []struct {
+		AreaId          string `json:"areaId"`
+		AreaName        string `json:"areaName"`
+		TableId         string `json:"tableId"`
+		TableName       string `json:"tableName"`
+		DinnerTime      string `json:"dinnerTime"`
+		Status          string `json:"status"`
+		BookingTimeType string `json:"bookingTimeType"`
+		PeriodTimeList  []any  `json:"periodTimeList"`
+	} `json:"tableRecordList"`
+	CancelTime      string `json:"cancelTime"`
+	BookingTimeType string `json:"bookingTimeType"`
+	ServerCode      int    `json:"serverCode"`
+}
+
+type BookTbaleInfoResp struct {
+	PageNum   int `json:"pageNum"`
+	PageSize  int `json:"pageSize"`
+	TotalNum  int `json:"totalNum"`
+	TotalPage int `json:"totalPage"`
+	PageList  []struct {
+		TableId        string `json:"tableId"`
+		TableName      string `json:"tableName"`
+		AreaId         string `json:"areaId"`
+		AreaName       string `json:"areaName"`
+		TableStatus    string `json:"tableStatus"`
+		DinersNum      int    `json:"dinersNum"`
+		TableNum       int    `json:"tableNum"`
+		OpenTime       string `json:"openTime"`
+		Sort           int    `json:"sort"`
+		TableNameIndex string `json:"tableNameIndex"`
+		DiningFlag     bool   `json:"diningFlag"`
+		TableTypeCode  string `json:"tableTypeCode"`
+	} `json:"pageList"`
+	MessageId  string `json:"messageId"`
+	ServerCode int    `json:"serverCode"`
+}
+
+type BookConfirmResp struct {
+	ReqId      string `json:"reqId"`
+	Data       bool   `json:"data"`
+	Code       string `json:"code"`
+	Msg        string `json:"msg"`
+	Success    string `json:"success"`
+	MsgCode    string `json:"msgCode"`
+	MsgInfo    string `json:"msgInfo"`
+	MessageId  string `json:"messageId"`
+	ServerCode int    `json:"serverCode"`
+}
+
+type BookCancelResp struct {
+	ReqId      string `json:"reqId"`
+	Data       bool   `json:"data"`
+	Code       string `json:"code"`
+	Msg        string `json:"msg"`
+	Success    string `json:"success"`
+	MsgCode    string `json:"msgCode"`
+	MsgInfo    string `json:"msgInfo"`
+	MessageId  string `json:"messageId"`
+	ServerCode int    `json:"serverCode"`
+}
+
+type BusinessIncomePromoResp struct {
+	Data struct {
+		TotalSize int `json:"totalSize"`
+		List      []struct {
+			BrandId             int    `json:"brandId"`
+			ShopName            string `json:"shopName"`
+			ShopId              int    `json:"shopId"`
+			AddressProvince     string `json:"addressProvince"`
+			AddressProvinceName string `json:"addressProvinceName"`
+			AddressCity         string `json:"addressCity"`
+			AddressCityName     string `json:"addressCityName"`
+			AddressArea         string `json:"addressArea"`
+			AddressAreaName     string `json:"addressAreaName"`
+			Date                string `json:"date"`
+			OrderPromoItems     struct {
+				ItemList []PromoItem `json:"itemList"`
+				SubTotal string      `json:"subTotal"`
+			} `json:"orderPromoItems"`
+			PaymentPromoItems struct {
+				ItemList []PromoItem `json:"itemList"`
+				SubTotal string      `json:"subTotal"`
+			} `json:"paymentPromoItems"`
+			OrderExpenseItems struct {
+				ItemList []PromoItem `json:"itemList"`
+				SubTotal string      `json:"subTotal"`
+			} `json:"orderExpenseItems"`
+		} `json:"list"`
+	} `json:"data"`
+	Success bool   `json:"success"`
+	MsgCode string `json:"msgCode"`
+	MsgInfo string `json:"msgInfo"`
+}
+
+type PromoItem struct {
+	Code       string      `json:"code"`
+	Name       string      `json:"name"`
+	Amount     string      `json:"amount"`
+	TextVal    string      `json:"textVal"`
+	DefaultVal string      `json:"defaultVal"`
+	ItemList   []PromoItem `json:"itemList"`
+}
+
+type BusinessIncomeResp struct {
+	Data struct {
+		TotalSize int `json:"totalSize"`
+		List      []struct {
+			BrandId                     int    `json:"brandId"`
+			ShopName                    string `json:"shopName"`
+			ShopId                      int    `json:"shopId"`
+			AddressProvince             string `json:"addressProvince"`
+			AddressProvinceName         string `json:"addressProvinceName"`
+			AddressCity                 string `json:"addressCity"`
+			AddressCityName             string `json:"addressCityName"`
+			AddressArea                 string `json:"addressArea"`
+			AddressAreaName             string `json:"addressAreaName"`
+			Date                        string `json:"date"`
+			SaleAmt                     string `json:"saleAmt"`
+			TotalPromoAmt               string `json:"totalPromoAmt"`
+			PromoAmtProportion          string `json:"promoAmtProportion"`
+			BusinessIncomeAmt           string `json:"businessIncomeAmt"`
+			ItemActualReceivedAmt       string `json:"itemActualReceivedAmt"`
+			ExtraFeeActualAmt           string `json:"extraFeeActualAmt"`
+			OrderCnt                    int    `json:"orderCnt"`
+			AvgTradeAmtPreDiscount      string `json:"avgTradeAmtPreDiscount"`
+			AvgTradeAmtAfterDiscount    string `json:"avgTradeAmtAfterDiscount"`
+			OrderPeopleCnt              int    `json:"orderPeopleCnt"`
+			AvgCustomerAmtPreDiscount   string `json:"avgCustomerAmtPreDiscount"`
+			AvgCustomerAmtAfterDiscount string `json:"avgCustomerAmtAfterDiscount"`
+			AvgDiningDuration           string `json:"avgDiningDuration"`
+			OpenTableCnt                int    `json:"openTableCnt"`
+			OpenTableRate               string `json:"openTableRate"`
+			ReopenTableRate             string `json:"reopenTableRate"`
+			OrderTypeItems              struct {
+				ItemList []OrderTypeItem `json:"itemList"`
+				SubTotal string          `json:"subTotal"`
+			} `json:"orderTypeItems"`
+		} `json:"list"`
+	} `json:"data"`
+}
+
+// 定义 OrderTypeItem 结构体
+type OrderTypeItem struct {
+	Code       string          `json:"code"`
+	Name       string          `json:"name"`
+	Amount     string          `json:"amount"`
+	TextVal    string          `json:"textVal"`
+	DefaultVal string          `json:"defaultVal"`
+	ItemList   []OrderTypeItem `json:"itemList"`
+}
+
+type BusinessIncomePromoStatisticsResp struct {
+	Data struct {
+		Values []struct {
+			FinishBusiDate     string `json:"finishBusiDate"`
+			PromoName          string `json:"promoName"`
+			PromoSecType       string `json:"promoSecType"`
+			PromoSecTypeName   string `json:"promoSecTypeName"`
+			PromoThirdTypeName string `json:"promoThirdTypeName"`
+			PromoType          string `json:"promoType"`
+			PromoTypeName      string `json:"promoTypeName"`
+			PromoAmt           string `json:"promoAmt"`
+		} `json:"values"`
+		TotalSize int `json:"totalSize"`
+	} `json:"data"`
+	Success bool   `json:"success"`
+	MsgCode string `json:"msgCode"`
+	MsgInfo string `json:"msgInfo"`
+}
+
+type BusinessIncomeConstituteResp struct {
+	Data struct {
+		TotalSize int `json:"totalSize"`
+		List      []struct {
+			BrandId             int    `json:"brandId"`
+			ShopName            string `json:"shopName"`
+			ShopId              int    `json:"shopId"`
+			AddressProvince     string `json:"addressProvince"`
+			AddressProvinceName string `json:"addressProvinceName"`
+			AddressCity         string `json:"addressCity"`
+			AddressCityName     string `json:"addressCityName"`
+			AddressArea         string `json:"addressArea"`
+			AddressAreaName     string `json:"addressAreaName"`
+			Date                string `json:"date"`
+			BusinessIncomeItems struct {
+				ItemList []BusinessIncomeItem `json:"itemList"`
+				SubTotal string               `json:"subTotal"`
+			} `json:"businessIncomeItems"`
+		} `json:"list"`
+	} `json:"data"`
+	Success bool   `json:"success"`
+	MsgCode string `json:"msgCode"`
+	MsgInfo string `json:"msgInfo"`
+}
+
+// 定义 BusinessIncomeItem 结构体
+type BusinessIncomeItem struct {
+	Code       string               `json:"code"`
+	Name       string               `json:"name"`
+	Amount     string               `json:"amount"`
+	TextVal    string               `json:"textVal"`
+	DefaultVal string               `json:"defaultVal"`
+	ItemList   []BusinessIncomeItem `json:"itemList"`
+}
+
+type KposLocalResp struct {
+	Success   bool   `json:"success"`
+	ErrorCode string `json:"errorCode"`
+	ErrorMsg  string `json:"errorMsg"`
+	Data      struct {
+		CartDTO struct {
+			ActualFee                      int64             `json:"actualFee"`
+			ActualReceive                  int64             `json:"actualReceive"`
+			AfterDiscountFee               int64             `json:"afterDiscountFee"`
+			AfterDiscountFeeStr            string            `json:"afterDiscountFeeStr"`
+			AreaId                         string            `json:"areaId"`
+			AreaName                       string            `json:"areaName"`
+			AvailableVoucherNum            int               `json:"availableVoucherNum"`
+			BusinessDate                   string            `json:"businessDate"`
+			BusinessFormat                 string            `json:"businessFormat"`
+			CartId                         string            `json:"cartId"`
+			CustomerFlag                   string            `json:"customerFlag"`
+			DepositFee                     int64             `json:"depositFee"`
+			DeviceId                       string            `json:"deviceId"`
+			DinersNum                      int               `json:"dinersNum"`
+			ExtMap                         map[string]string `json:"extMap"`
+			ExtraPromoFee                  int64             `json:"extraPromoFee"`
+			ExtraTotalFee                  int64             `json:"extraTotalFee"`
+			GmtCreate                      int64             `json:"gmtCreate"`
+			GmtModified                    int64             `json:"gmtModified"`
+			HangCartNum                    int               `json:"hangCartNum"`
+			HasPassword                    bool              `json:"hasPassword"`
+			HasPointFlag                   string            `json:"hasPointFlag"`
+			HasVoucherFlag                 string            `json:"hasVoucherFlag"`
+			JoinTableAttachFeeFlag         bool              `json:"joinTableAttachFeeFlag"`
+			JoinTableMemberFlag            bool              `json:"joinTableMemberFlag"`
+			JoinTablePrepaymentFlag        bool              `json:"joinTablePrepaymentFlag"`
+			JoinTablePromoFlag             bool              `json:"joinTablePromoFlag"`
+			JointTableFlag                 string            `json:"jointTableFlag"`
+			JointTableInfos                []interface{}     `json:"jointTableInfos"`
+			MantissaFee                    int64             `json:"mantissaFee"`
+			MantissaFeeStr                 string            `json:"mantissaFeeStr"`
+			ModifyCartKeyInfo              bool              `json:"modifyCartKeyInfo"`
+			ModifyNumFlag                  bool              `json:"modifyNumFlag"`
+			MultiTableFlag                 string            `json:"multiTableFlag"`
+			OpenTime                       string            `json:"openTime"`
+			OrderId                        string            `json:"orderId"`
+			OrderPrintType                 []string          `json:"orderPrintType"`
+			OrderStatus                    string            `json:"orderStatus"`
+			OrderType                      string            `json:"orderType"`
+			PayFlag                        bool              `json:"payFlag"`
+			PointPromoFee                  int64             `json:"pointPromoFee"`
+			PreMantissaFee                 int64             `json:"preMantissaFee"`
+			PreMantissaFeeUseScope         string            `json:"preMantissaFeeUseScope"`
+			PrepaymentFee                  int64             `json:"prepaymentFee"`
+			PromoFee                       int64             `json:"promoFee"`
+			PromoFeeStr                    string            `json:"promoFeeStr"`
+			PromoSaveSource                string            `json:"promoSaveSource"`
+			QueryMemberCardFlag            string            `json:"queryMemberCardFlag"`
+			QueryVoucherFlag               string            `json:"queryVoucherFlag"`
+			RefreshGapTime                 int               `json:"refreshGapTime"`
+			ReverseFlag                    bool              `json:"reverseFlag"`
+			ShopId                         string            `json:"shopId"`
+			SupportMemDayPrice             bool              `json:"supportMemDayPrice"`
+			SupportMemPrice                bool              `json:"supportMemPrice"`
+			SupportSpecialItemWithRecharge bool              `json:"supportSpecialItemWithRecharge"`
+			TableId                        string            `json:"tableId"`
+			TableName                      string            `json:"tableName"`
+			TogetherTableNum               int               `json:"togetherTableNum"`
+			TotalFee                       int64             `json:"totalFee"`
+			TotalFeeStr                    string            `json:"totalFeeStr"`
+			TotalPromoFee                  int64             `json:"totalPromoFee"`
+			UseMemberDayPrice              string            `json:"useMemberDayPrice"`
+			UseMemberPrice                 string            `json:"useMemberPrice"`
+			ValidateItemTotalFee           int64             `json:"validateItemTotalFee"`
+			VerifyFlag                     bool              `json:"verifyFlag"`
+			WholePackFlag                  string            `json:"wholePackFlag"`
+		} `json:"cartDTO"`
+		CartItemDTOList     []CartItemDTO     `json:"cartItemDTOList"`
+		DcOrderBatchDTOList []DcOrderBatchDTO `json:"dcOrderBatchDTOList"`
+		OrderDTO            OrderDTO          `json:"orderDTO"`
+	} `json:"data"`
+	RequestCloud   bool `json:"requestCloud"`
+	RequestCloudRt int  `json:"requestCloudRt"`
+}
+
+type CartItemDTO struct {
+	ActualFee               int64             `json:"actualFee"`
+	AddSpiceTotalFee        int64             `json:"addSpiceTotalFee"`
+	AdditionActualFee       int64             `json:"additionActualFee"`
+	AliasName               string            `json:"aliasName"`
+	BoolChangePrice         string            `json:"boolChangePrice"`
+	CartItemId              string            `json:"cartItemId"`
+	ChangePriceFlag         string            `json:"changePriceFlag"`
+	CookAttachTotalFee      int64             `json:"cookAttachTotalFee"`
+	CostPrice               int64             `json:"costPrice"`
+	CustomExtMap            map[string]string `json:"customExtMap"`
+	CustomerFlag            string            `json:"customerFlag"`
+	DeviceId                string            `json:"deviceId"`
+	DishDiscountFlag        string            `json:"dishDiscountFlag"`
+	DishSkuWeight           int64             `json:"dishSkuWeight"`
+	DoubleUnitWeighDishFlag string            `json:"doubleUnitWeighDishFlag"`
+	GiveFlag                string            `json:"giveFlag"`
+	ItemCategoryId          string            `json:"itemCategoryId"`
+	ItemCategoryInfo        ItemCategoryInfo  `json:"itemCategoryInfo"`
+	ItemCategoryName        string            `json:"itemCategoryName"`
+	ItemGroupFee            int64             `json:"itemGroupFee"`
+	ItemGroupFeeStr         string            `json:"itemGroupFeeStr"`
+	ItemId                  string            `json:"itemId"`
+	ItemName                string            `json:"itemName"`
+	ItemNum                 int               `json:"itemNum"`
+	ItemNumStr              string            `json:"itemNumStr"`
+	ItemOriginGroupFee      float64           `json:"itemOriginGroupFee"`
+	ItemOriginPrice         int64             `json:"itemOriginPrice"`
+	ItemPrice               int64             `json:"itemPrice"`
+	ItemPriceStr            string            `json:"itemPriceStr"`
+	ItemType                string            `json:"itemType"`
+	ModifyItemNum           int               `json:"modifyItemNum"`
+	MultiSpecFlag           string            `json:"multiSpecFlag"`
+	SaasItemId              string            `json:"saasItemId"`
+	SaasSkuId               string            `json:"saasSkuId"`
+	ServingNo               int               `json:"servingNo"`
+	SkuCode                 string            `json:"skuCode"`
+	SkuId                   string            `json:"skuId"`
+	SkuName                 string            `json:"skuName"`
+	SkuUuid                 string            `json:"skuUuid"`
+	SupportDecimalFlag      string            `json:"supportDecimalFlag"`
+	TotalFee                int64             `json:"totalFee"`
+	TotalFeeStr             string            `json:"totalFeeStr"`
+	UnitId                  string            `json:"unitId"`
+	UnitName                string            `json:"unitName"`
+	WeighDishFlag           string            `json:"weighDishFlag"`
+}
+
+type ItemCategoryInfo struct {
+	ItemCategoryId     string `json:"itemCategoryId"`
+	ItemCategoryName   string `json:"itemCategoryName"`
+	ItemCategorySort   int    `json:"itemCategorySort"`
+	ItemDishCategoryId string `json:"itemDishCategoryId"`
+}
+
+// ---------------- DcOrderBatchDTO ----------------
+type DcOrderBatchDTO struct {
+	HasFulfillBatch bool        `json:"hasFulfillBatch"`
+	OrderBatch      OrderBatch  `json:"orderBatch"`
+	OrderId         string      `json:"orderId"`
+	OrderItemList   []OrderItem `json:"orderItemList"`
+	OrderNo         string      `json:"orderNo"`
+	ShopId          string      `json:"shopId"`
+}
+
+type OrderBatch struct {
+	BatchCreatorName   string            `json:"batchCreatorName"`
+	BatchId            string            `json:"batchId"`
+	BatchOrderTime     string            `json:"batchOrderTime"`
+	BatchOrderTimeDate int64             `json:"batchOrderTimeDate"`
+	BatchStatus        string            `json:"batchStatus"`
+	BatchType          string            `json:"batchType"`
+	Deleted            int               `json:"deleted"`
+	Env                string            `json:"env"`
+	ExtMap             map[string]string `json:"extMap"`
+	GmtCreate          int64             `json:"gmtCreate"`
+	GmtModified        int64             `json:"gmtModified"`
+	OrderId            string            `json:"orderId"`
+	OrderNo            string            `json:"orderNo"`
+	ShopId             string            `json:"shopId"`
+}
+
+type OrderItem struct {
+	// 以下仅列出常用字段，可按需要继续补充
+	AbolishRefundFlag        string            `json:"abolishRefundFlag"`
+	ActualFee                int64             `json:"actualFee"`
+	AddSpiceTotalActualFee   int64             `json:"addSpiceTotalActualFee"`
+	AddSpiceTotalFee         int64             `json:"addSpiceTotalFee"`
+	AdditionActualFee        int64             `json:"additionActualFee"`
+	AliasName                string            `json:"aliasName"`
+	BatchId                  string            `json:"batchId"`
+	BoolChangePrice          string            `json:"boolChangePrice"`
+	BuffetMealVoucher        bool              `json:"buffetMealVoucher"`
+	BuyTime                  string            `json:"buyTime"`
+	CartItemId               string            `json:"cartItemId"`
+	ChangePriceFlag          string            `json:"changePriceFlag"`
+	CookAttachTotalActualFee int64             `json:"cookAttachTotalActualFee"`
+	CookAttachTotalFee       int64             `json:"cookAttachTotalFee"`
+	CostPrice                int64             `json:"costPrice"`
+	CustomExtMap             map[string]string `json:"customExtMap"`
+	CustomerFlag             string            `json:"customerFlag"`
+	Deleted                  int               `json:"deleted"`
+	DishDiscountFlag         string            `json:"dishDiscountFlag"`
+	DishSkuWeight            int64             `json:"dishSkuWeight"`
+	DisplayNo                string            `json:"displayNo"`
+	DoubleUnitWeighDish      bool              `json:"doubleUnitWeighDish"`
+	DoubleUnitWeighDishFlag  string            `json:"doubleUnitWeighDishFlag"`
+	Env                      string            `json:"env"`
+	FinishedDishFlag         string            `json:"finishedDishFlag"`
+	GiveFlag                 string            `json:"giveFlag"`
+	GmtCreate                int64             `json:"gmtCreate"`
+	GmtModified              int64             `json:"gmtModified"`
+	GoodsOriginType          string            `json:"goodsOriginType"`
+	InventoryNum             int               `json:"inventoryNum"`
+	ItemCategoryId           string            `json:"itemCategoryId"`
+	ItemCategoryInfo         ItemCategoryInfo  `json:"itemCategoryInfo"`
+	ItemCategoryName         string            `json:"itemCategoryName"`
+	ItemFulfillStatus        string            `json:"itemFulfillStatus"`
+	ItemGroupFee             int64             `json:"itemGroupFee"`
+	ItemGroupRefundFee       int64             `json:"itemGroupRefundFee"`
+	ItemId                   string            `json:"itemId"`
+	ItemName                 string            `json:"itemName"`
+	ItemNum                  int               `json:"itemNum"`
+	ItemNumStr               string            `json:"itemNumStr"`
+	ItemOriginGroupFee       float64           `json:"itemOriginGroupFee"`
+	ItemOriginPrice          int64             `json:"itemOriginPrice"`
+	ItemPrice                int64             `json:"itemPrice"`
+	ItemSortIndex            int               `json:"itemSortIndex"`
+	ItemType                 string            `json:"itemType"`
+	JoinTableUniKey          string            `json:"joinTableUniKey"`
+	LastOperateUserId        string            `json:"lastOperateUserId"`
+	ManualDiscountReason     string            `json:"manualDiscountReason"`
+	MultiSpecFlag            string            `json:"multiSpecFlag"`
+	MustOrderFlag            string            `json:"mustOrderFlag"`
+	NetDishFlag              string            `json:"netDishFlag"`
+	OpenTableDishFlag        string            `json:"openTableDishFlag"`
+	OrderAddSpiceList        []interface{}     `json:"orderAddSpiceList"`
+	OrderId                  string            `json:"orderId"`
+	OrderItemId              string            `json:"orderItemId"`
+	OrderItemOperateList     []interface{}     `json:"orderItemOperateList"`
+	OrderItemPackageList     []interface{}     `json:"orderItemPackageList"`
+	OrderNo                  string            `json:"orderNo"`
+	OrderPackingBoxList      []interface{}     `json:"orderPackingBoxList"`
+	PackageFee               int64             `json:"packageFee"`
+	PackingBoxTotalFee       int64             `json:"packingBoxTotalFee"`
+	PromoFee                 int64             `json:"promoFee"`
+	RefundFlag               string            `json:"refundFlag"`
+	RequestSource            string            `json:"requestSource"`
+	RowId                    string            `json:"rowId"`
+	SaasItemId               string            `json:"saasItemId"`
+	SaasSkuId                string            `json:"saasSkuId"`
+	ServingNo                int               `json:"servingNo"`
+	ShopId                   string            `json:"shopId"`
+	SideDishPricingMode      string            `json:"sideDishPricingMode"`
+	SingleItemGroupFee       int64             `json:"singleItemGroupFee"`
+	SingleItemNum            int               `json:"singleItemNum"`
+	SinglePackFlag           string            `json:"singlePackFlag"`
+	SkuCode                  string            `json:"skuCode"`
+	SkuId                    string            `json:"skuId"`
+	SkuName                  string            `json:"skuName"`
+	SkuSaleDisplayFlag       string            `json:"skuSaleDisplayFlag"`
+	SkuUuid                  string            `json:"skuUuid"`
+	SpecList                 []Spec            `json:"specList"`
+	SpuName                  string            `json:"spuName"`
+	StepNum                  int               `json:"stepNum"`
+	SupportDecimalFlag       string            `json:"supportDecimalFlag"`
+	TempDishFlag             string            `json:"tempDishFlag"`
+	TimePeriod               bool              `json:"timePeriod"`
+	TimePeriodFlag           string            `json:"timePeriodFlag"`
+	TotalFee                 int64             `json:"totalFee"`
+	TotalFeeStr              string            `json:"totalFeeStr"`
+	UnitId                   string            `json:"unitId"`
+	UnitName                 string            `json:"unitName"`
+	UrgeDishFlag             string            `json:"urgeDishFlag"`
+	WaitCallState            string            `json:"waitCallState"`
+	WaiterId                 string            `json:"waiterId"`
+	WaiterName               string            `json:"waiterName"`
+	WeighDishFlag            string            `json:"weighDishFlag"`
+}
+
+type Spec struct {
+	SpecId   string `json:"specId"`
+	SpecName string `json:"specName"`
+}
+
+// ---------------- OrderDTO ----------------
+// 这里仅列出少量常用字段，可按需要继续补全
+type OrderDTO struct {
+	ActualFee        int64  `json:"actualFee"`
+	AfterDiscountFee int64  `json:"afterDiscountFee"`
+	AreaId           string `json:"areaId"`
+	AreaName         string `json:"areaName"`
+	BusinessDate     string `json:"businessDate"`
+	DeviceId         string `json:"deviceId"`
+	DinersNum        int    `json:"dinnersNum"`
+	OrderId          string `json:"orderId"`
+	OrderNo          string `json:"orderNo"`
+	OrderStatus      string `json:"orderStatus"`
+	PayStatus        string `json:"payStatus"`
+	ShopId           string `json:"shopId"`
+	TableId          string `json:"tableId"`
+	TableName        string `json:"tableName"`
+	TotalFee         int64  `json:"totalFee"`
+	// ... 其余字段可按业务补全
+}
+
+type TableStatusResp struct {
+	Data struct {
+		KposFlag       bool `json:"kposFlag"`
+		BookFlag       bool `json:"bookFlag"`
+		WaitHandleFlag bool `json:"waitHandleFlag"`
+		OrderList      []struct {
+			CloudOrderNo string `json:"cloudOrderNo"`
+			BusinessType string `json:"businessType"`
+			OrderId      string `json:"orderId"`
+		} `json:"orderList"`
+		TableId       string `json:"tableId"`
+		TableLinkFlag bool   `json:"tableLinkFlag"`
+		TableStatus   string `json:"tableStatus"`
+	} `json:"data"`
+}
+
+type KposlocalAddResp struct {
+	CanRetry bool `json:"canRetry"`
+	Data     struct {
+		TraceId  string `json:"traceId"`
+		CanRetry bool   `json:"canRetry"`
+		Data     struct {
+			DcOrderBatchDTOList []struct {
+				OrderNo       string `json:"orderNo"`
+				OrderId       string `json:"orderId"`
+				OrderItemList []struct {
+					ItemOriginGroupFee    float64                `json:"itemOriginGroupFee"`
+					ItemType              string                 `json:"itemType"`
+					ItemNumStr            string                 `json:"itemNumStr"`
+					MustOrderFlag         string                 `json:"mustOrderFlag"`
+					OrderId               string                 `json:"orderId"`
+					OrderAddSpiceList     []any                  `json:"orderAddSpiceList"`
+					ItemCategoryId        string                 `json:"itemCategoryId"`
+					BatchId               string                 `json:"batchId"`
+					BoolChangePrice       string                 `json:"boolChangePrice"`
+					AbolishRefundFlag     string                 `json:"abolishRefundFlag"`
+					GiveFlag              string                 `json:"giveFlag"`
+					TotalFeeStr           string                 `json:"totalFeeStr"`
+					SkuName               string                 `json:"skuName"`
+					ItemName              string                 `json:"itemName"`
+					ItemPriceStr          string                 `json:"itemPriceStr"`
+					OrderPackingBoxList   []any                  `json:"orderPackingBoxList"`
+					AddSpiceTotalFee      int                    `json:"addSpiceTotalFee"`
+					ItemGroupFee          int                    `json:"itemGroupFee"`
+					UnitId                string                 `json:"unitId"`
+					DishDiscountFlag      string                 `json:"dishDiscountFlag"`
+					ActualFee             int                    `json:"actualFee"`
+					SkuId                 string                 `json:"skuId"`
+					CartItemId            string                 `json:"cartItemId"`
+					TempDishFlag          string                 `json:"tempDishFlag"`
+					AliasName             string                 `json:"aliasName"`
+					OrderNo               string                 `json:"orderNo"`
+					UnitName              string                 `json:"unitName"`
+					WaitCallState         string                 `json:"waitCallState"`
+					ChangePriceFlag       string                 `json:"changePriceFlag"`
+					ItemCategoryName      string                 `json:"itemCategoryName"`
+					OrderItemId           string                 `json:"orderItemId"`
+					OpenTableDishFlag     string                 `json:"openTableDishFlag"`
+					BuyTime               string                 `json:"buyTime"`
+					ItemOriginGroupFeeStr string                 `json:"itemOriginGroupFeeStr"`
+					UrgeDishFlag          string                 `json:"urgeDishFlag"`
+					CookAttachTotalFee    int                    `json:"cookAttachTotalFee"`
+					AddSpiceTotalFeeStr   string                 `json:"addSpiceTotalFeeStr"`
+					ItemId                string                 `json:"itemId"`
+					ItemOriginPrice       int                    `json:"itemOriginPrice"`
+					TotalFee              int                    `json:"totalFee"`
+					RefundFlag            string                 `json:"refundFlag"`
+					OrderItemPackageList  []OrderItemPackageList `json:"orderItemPackageList"`
+					WeighDishFlag         string                 `json:"weighDishFlag"`
+					CookAttachTotalFeeStr string                 `json:"cookAttachTotalFeeStr"`
+					SkuCode               string                 `json:"skuCode"`
+				} `json:"orderItemList"`
+				OrderBatch struct {
+					OrderNo        string `json:"orderNo"`
+					OrderId        string `json:"orderId"`
+					BatchId        string `json:"batchId"`
+					BatchOrderTime string `json:"batchOrderTime"`
+					BatchType      string `json:"batchType"`
+					BatchStatus    string `json:"batchStatus"`
+				} `json:"orderBatch"`
+			} `json:"dcOrderBatchDTOList"`
+			CartDTO struct {
+				OrderType           string `json:"orderType"`
+				JointTableFlag      string `json:"jointTableFlag"`
+				OrderId             string `json:"orderId"`
+				CartId              string `json:"cartId"`
+				OrderStatus         string `json:"orderStatus"`
+				ReverseFlag         bool   `json:"reverseFlag"`
+				DeviceId            string `json:"deviceId"`
+				PromoFeeStr         string `json:"promoFeeStr"`
+				TableName           string `json:"tableName"`
+				TotalFeeStr         string `json:"totalFeeStr"`
+				BusinessDate        string `json:"businessDate"`
+				TotalFee            int    `json:"totalFee"`
+				TableId             string `json:"tableId"`
+				AfterDiscountFeeStr string `json:"afterDiscountFeeStr"`
+				OpenTime            string `json:"openTime"`
+				ActualFee           int    `json:"actualFee"`
+				PayFlag             bool   `json:"payFlag"`
+			} `json:"cartDTO"`
+		} `json:"data"`
+	} `json:"data"`
+	RequestCloud   bool           `json:"requestCloud"`
+	RequestCloudRt int            `json:"requestCloudRt"`
+	ExtInfo        map[string]any `json:"extInfo"`
+	Success        bool           `json:"success"`
+	Class          string         `json:"class"`
+}
+
+type OrderItemPackageList struct {
+	AbolishRefundFlag   string `json:"abolishRefundFlag"`
+	ActualFee           int    `json:"actualFee"`
+	AddSpiceTotalFee    int    `json:"addSpiceTotalFee"`
+	AddSpiceTotalFeeStr string `json:"addSpiceTotalFeeStr"`
+	AliasName           string `json:"aliasName"`
+	BatchId             string `json:"batchId"`
+	BoolChangePrice     string `json:"boolChangePrice"`
+	BuyTime             string `json:"buyTime"`
+	CartItemId          string `json:"cartItemId"`
+	CartItemNoteList    []any  `json:"cartItemNoteList"`
+	ChangePriceFlag     string `json:"changePriceFlag"`
+	ChildItemGroupInfo  struct {
+		GroupId   string `json:"groupId"`
+		GroupName string `json:"groupName"`
+	} `json:"childItemGroupInfo"`
+	CookAttachTotalFee    int                    `json:"cookAttachTotalFee"`
+	CookAttachTotalFeeStr string                 `json:"cookAttachTotalFeeStr"`
+	DeviceId              string                 `json:"deviceId"`
+	DishDiscountFlag      string                 `json:"dishDiscountFlag"`
+	GiveFlag              string                 `json:"giveFlag"`
+	ItemCategoryId        string                 `json:"itemCategoryId"`
+	ItemCategoryName      string                 `json:"itemCategoryName"`
+	ItemGroupFee          int                    `json:"itemGroupFee"`
+	ItemId                string                 `json:"itemId"`
+	ItemName              string                 `json:"itemName"`
+	ItemNumStr            string                 `json:"itemNumStr"`
+	ItemOriginGroupFee    int                    `json:"itemOriginGroupFee"`
+	ItemOriginGroupFeeStr string                 `json:"itemOriginGroupFeeStr"`
+	ItemOriginPrice       int                    `json:"itemOriginPrice"`
+	ItemPriceStr          string                 `json:"itemPriceStr"`
+	ItemType              string                 `json:"itemType"`
+	MustOrderFlag         string                 `json:"mustOrderFlag"`
+	OpenTableDishFlag     string                 `json:"openTableDishFlag"`
+	OrderAddSpiceList     []any                  `json:"orderAddSpiceList"`
+	OrderId               string                 `json:"orderId"`
+	OrderItemId           string                 `json:"orderItemId"`
+	OrderItemPackageList  []OrderItemPackageList `json:"orderItemPackageList"`
+	OrderNo               string                 `json:"orderNo"`
+	OrderPackingBoxList   []any                  `json:"orderPackingBoxList"`
+	RefundFlag            string                 `json:"refundFlag"`
+	SkuCode               string                 `json:"skuCode"`
+	SkuId                 string                 `json:"skuId"`
+	SkuName               string                 `json:"skuName"`
+	TempDishFlag          string                 `json:"tempDishFlag"`
+	TotalFee              int                    `json:"totalFee"`
+	TotalFeeStr           string                 `json:"totalFeeStr"`
+	UnitId                string                 `json:"unitId"`
+	UnitName              string                 `json:"unitName"`
+	UrgeDishFlag          string                 `json:"urgeDishFlag"`
+	WaitCallState         string                 `json:"waitCallState"`
+	WeighDishFlag         string                 `json:"weighDishFlag"`
 }

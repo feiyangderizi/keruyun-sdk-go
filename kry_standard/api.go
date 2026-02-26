@@ -35,12 +35,32 @@ type Api interface {
 
 	// CrmCreate 会员创建
 	CrmCreate(req CrmCreateReq) kry_model.Result[CrmCreateResp]
+	// CrmCreate 会员创建
+	CrmUpdate(req CrmUpdateReq) kry_model.Result[CrmUpdateResp]
 	// CrmQueryByMobile 根据手机号查询会员
 	CrmQueryByMobile(req CrmQueryByMobileReq) kry_model.Result[CrmCustomerInfoResp]
+	// CrmQueryByIds 根据顾客人的id集合查询会员列表
+	CrmQueryByIds(req CrmQueryByIdsReq) kry_model.Result[CrmCustomerIdsResp]
 	// CrmQueryProperty 会员资产查询
 	CrmQueryProperty(req CrmQueryPropertyReq) kry_model.Result[CrmCustomerPropertyResp]
 	// CrmDirectCharge 储值充值接口
 	CrmDirectCharge(req CrmDirectChargeReq) kry_model.Result[CrmDirectChargeResp]
+	// CrmTemplateList 查询模板券列表
+	CrmTemplateList(req CrmTemplateListReq) kry_model.Result[CrmTemplateListResp]
+	// CrmTemplateInfo 查询模板券详情
+	CrmTemplateInfo(req CrmTemplateInfoReq) kry_model.Result[CrmTemplateInfoResp]
+	// CrmTemplateShopList
+	CrmTemplateShopList(req CrmTemplateShopReq) kry_model.Result[CrmTemplateShopResp]
+	// CrmTemplateDishList
+	CrmTemplateDishList(req CrmTemplateDishReq) kry_model.Result[CrmTemplateDishResp]
+	// CrmCouponSend
+	CrmCouponSend(req CrmCouponSendReq) kry_model.Result[CrmCouponSendResp]
+	// CrmCouponInvalid
+	CrmCouponInvalid(req CrmCouponInvalidReq) kry_model.Result[CrmCouponInvalidResp]
+	// CrmCouponQueryList
+	CrmCouponQueryList(req CrmCouponQueryReq) kry_model.Result[CrmCouponQueryResp]
+	// CrmCouponQueryList
+	CrmCouponQueryInfo(req CrmCouponInfoReq) kry_model.Result[CrmCouponInfoResp]
 
 	/*
 		订单相关
@@ -50,6 +70,10 @@ type Api interface {
 	OrderQueryDetail(req OrderQueryDetailReq) kry_model.Result[OrderDetailResp]
 	// OrderQueryList 订单列表查询接口
 	OrderQueryList(req OrderQueryListReq) kry_model.Result[OrderListResp]
+
+	QueryKposLocal(req KposlocalReq) kry_model.Result[KposlocalAddResp]
+	QueryKposLocalAdd(req KposlocalAddReq) kry_model.Result[KposlocalAddResp]
+	QueryTableStatus(req KposTableStatusQueryReq) kry_model.Result[TableStatusResp]
 
 	/*
 		供应链2.0
@@ -99,4 +123,24 @@ type Api interface {
 	StockQuery(req StockQueryReq) kry_model.Result[StockQueryResp]
 	// OrgQuery 查询组织机构信息
 	OrgQuery(req OrgQueryReq) kry_model.Result[OrgQueryResp]
+
+	/*
+		预定
+	*/
+	BookSave(req BookSaveReq) kry_model.Result[BookSaveResp]
+	BookQueryShopBookPeriodTime(req BookQueryPeriodTimeReq) kry_model.Result[BookQueryPeriodTimeResp]
+	BookQueryOrderInfo(req BookQueryOrderReq) kry_model.Result[BookQueryOrderResp]
+	BookQueryTableInfo(req BookQueryTableInfoReq) kry_model.Result[BookTbaleInfoResp]
+	BookConfirm(req BookConfirmReq) kry_model.Result[BookConfirmResp]
+	BookCancel(req BookCancelReq) kry_model.Result[BookCancelResp]
+	/*
+		优惠券
+	*/
+	/*
+		统计
+	*/
+	BusinessIncomeList(req BusinessIncomeReq) kry_model.Result[BusinessIncomeResp]
+
+	// 增加公共接口
+	KryCrm(req KryCommon) (any, error)
 }

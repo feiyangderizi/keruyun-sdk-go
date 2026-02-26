@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/loebfly/keruyun-sdk-go/internal/config"
 	"github.com/loebfly/keruyun-sdk-go/internal/util"
 	"github.com/loebfly/keruyun-sdk-go/kry_model"
-	"net/http"
-	"time"
 )
 
 type HttpMethod string
@@ -20,6 +21,11 @@ const (
 
 func JsonToResult[D any](options JsonOptions) kry_model.Result[D] {
 	return toResult[D](JsonRequest(options))
+}
+
+func JsonToAny(options JsonOptions) (any, error) {
+	res, err := JsonRequest(options)
+	return string(res), err
 }
 
 // JsonRequest Json请求

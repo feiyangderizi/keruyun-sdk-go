@@ -35,15 +35,30 @@ type DishQueryCategoryReq struct {
 }
 
 type CrmCreateReq struct {
-	Gender   int    `json:"gender"`   // 性别,0女1男2其它
-	Mobile   string `json:"mobile"`   // 手机号,11位
-	Name     string `json:"name"`     // 姓名
-	ShopId   string `json:"shopId"`   // 入会门店id
-	Birthday string `json:"birthday"` // 生日日期,yyyy-MM-dd格式
+	Gender   int    `json:"gender"`             // 性别,0女1男2其它
+	Mobile   string `json:"mobile"`             // 手机号,11位
+	Name     string `json:"name"`               // 姓名
+	ShopId   string `json:"shopId"`             // 入会门店id
+	Birthday string `json:"birthday,omitempty"` // 生日日期,yyyy-MM-dd格式
+}
+
+type CrmUpdateReq struct {
+	Birthday     int64  `json:"birthday"`
+	Address      string `json:"address"`
+	Gender       int    `json:"gender"`
+	Remark       string `json:"remark"`
+	CustomerType int    `json:"customerType"` // 顾客类型
+	CustomerId   string `json:"customerId"`
+	Name         string `json:"name"`
+	Invoice      string `json:"invoice"`
+	Email        string `json:"email"`
 }
 
 type CrmQueryByMobileReq struct {
 	Mobile string `json:"mobile"`
+}
+type CrmQueryByIdsReq struct {
+	CustomerIds []int `json:"customerIds"`
 }
 
 type CrmQueryPropertyReq struct {
@@ -62,6 +77,77 @@ type CrmDirectChargeReq struct {
 	OperatorId       string `json:"operatorId"`       // 操作人id（数字字符串，长度不超过64位）
 }
 
+type CrmTemplateListReq struct {
+	TypeList   []string `json:"typeList"`
+	StatusList []string `json:"statusList"`
+	PageNo     string   `json:"pageNo"`
+	PageSize   string   `json:"pageSize"`
+}
+
+var TypeList = map[int]string{
+	1: "CASH",               // 代金券
+	2: "DISCOUNT",           // 折扣券
+	3: "GIFT",               // 礼品券
+	4: "CONDITION_DISCOUNT", // 第N份折扣券
+	5: "BOUGHT_GIFT",        // 买A赠B券
+}
+
+var StatusList = map[int]string{
+	1: "UNUSED",       // 未使用
+	2: "USED",         // 使用中
+	3: "NO_INVENTORY", // 无库存
+	4: "INVALID",      // 已失效
+	5: "AUDITING",     // 待审核
+	6: "REJECTED",     //  驳回
+}
+
+var MemberCouponStatusList = map[int]string{
+	1: "NORMAL",  // 未使用
+	2: "FREEZED", // 冻结中
+	3: "INVALID", // 已失效
+	4: "EXPIRED", // 已过期
+	5: "ISUSED",  // 已使用
+}
+
+type CrmTemplateInfoReq struct {
+	TemplateId  string `json:"templateId"`
+	NeedDeleted bool   `json:"needDeleted"`
+}
+
+type CrmTemplateShopReq struct {
+	PageNo     string `json:"pageNo"`
+	PageSize   string `json:"pageSize"`
+	TemplateId string `json:"templateId"`
+}
+
+type CrmTemplateDishReq struct {
+	PageNo     string `json:"pageNo"`
+	PageSize   string `json:"pageSize"`
+	TemplateId string `json:"templateId"`
+}
+
+type CrmCouponSendReq struct {
+	ActivityId       string `json:"activityId"`
+	OutPreInstanceId string `json:"outPreInstanceId"`
+	CustomerId       string `json:"customerId"`
+	TemplateId       string `json:"templateId"`
+}
+
+type CrmCouponInvalidReq struct {
+	ResourceCodes []string `json:"resourceCodes"`
+}
+
+type CrmCouponQueryReq struct {
+	PageNo     string   `json:"pageNo"`
+	CustomerId string   `json:"customerId"`
+	PageSize   string   `json:"pageSize"`
+	StatusList []string `json:"statusList"`
+}
+
+type CrmCouponInfoReq struct {
+	ResourceCode string `json:"resourceCode"`
+	CustomerId   string `json:"customerId"`
+}
 type OrderQueryDetailReq struct {
 	OrderId string `json:"orderId"` // 	订单ID
 }
@@ -258,4 +344,301 @@ type StockQueryReq struct {
 
 type OrgQueryReq struct {
 	OrgType int `json:"orgType"` // 3门店，7 配送中心，10仓库
+}
+
+type BookQueryReq struct {
+	BookOrderNo string `json:"bookOrderNo"`
+}
+
+type BookSaveReq struct {
+	OrderNo                string `json:"orderNo"`
+	DinnerTime             string `json:"dinnerTime"`
+	TableNum               int    `json:"tableNum"`
+	DinersNum              int    `json:"dinersNum"`
+	CustomerName           string `json:"customerName"`
+	CustomerSex            string `json:"customerSex"`
+	CustomerPhone          string `json:"customerPhone"`
+	BusinessType           string `json:"businessType"`
+	DeviceType             string `json:"deviceType"`
+	DeviceId               string `json:"deviceId"`
+	SkipConflictFlag       bool   `json:"skipConflictFlag"`
+	TableBookRecordDtoList []struct {
+		AreaId    string `json:"areaId"`
+		AreaName  string `json:"areaName"`
+		TableId   string `json:"tableId"`
+		TableName string `json:"tableName"`
+	} `json:"tableBookRecordDtoList"`
+	Note                  string       `json:"note"`
+	OutBizNo              string       `json:"outBizNo"`
+	SendMessageFlag       bool         `json:"sendMessageFlag"`
+	BookingTimeType       string       `json:"bookingTimeType"`
+	PeriodTimeList        []PeriodTime `json:"periodTimeList"`
+	OperatorUserId        string       `json:"operatorUserId"`
+	OperatorUserName      string       `json:"operatorUserName"`
+	BookingTypeName       string       `json:"bookingTypeName"`
+	BookingTitle          string       `json:"bookingTitle"`
+	ArrivalTime           string       `json:"arrivalTime"`
+	ColdTableCount        int          `json:"coldTableCount"`
+	EmptyTableCount       int          `json:"emptyTableCount"`
+	FullTableCount        int          `json:"fullTableCount"`
+	DiningStandard        *string      `json:"diningStandard"`
+	CommissionStaffId     string       `json:"commissionStaffId"`
+	CommissionStaffName   string       `json:"commissionStaffName"`
+	CommissionStaffSource string       `json:"commissionStaffSource"`
+	CommissionStaffPhone  string       `json:"commissionStaffPhone"`
+	AddItemList           []struct {
+		DishType            string            `json:"dishType"`
+		SkuId               string            `json:"skuId"`
+		SellPrice           float64           `json:"sellPrice"`
+		DishNum             float64           `json:"dishNum"`
+		UnitId              string            `json:"unitId"`
+		UnitName            string            `json:"unitName"`
+		WeighFlag           string            `json:"weighFlag"`
+		CategoryId          string            `json:"categoryId"`
+		CookingWayGroupList []CookingWayGroup `json:"cookingWayGroupList"`
+		ComboGroupList      []struct {
+			ComboGroupId         string `json:"comboGroupId"`
+			ComboGroupDetailList []struct {
+				CookingWayGroupList []CookingWayGroup `json:"cookingWayGroupList"`
+				SideDishGroupList   []struct {
+					SideDishGroupId         string `json:"sideDishGroupId"`
+					SideDishGroupDetailList []struct {
+						SideDishId  int `json:"sideDishId"`
+						SideDishNum int `json:"sideDishNum"`
+					} `json:"sideDishGroupDetailList"`
+				} `json:"sideDishGroupList"`
+				SingleDishId   string  `json:"singleDishId"`
+				DishNum        int     `json:"dishNum"`
+				WeighFlag      string  `json:"weighFlag"`
+				DishName       string  `json:"dishName"`
+				SellPrice      float64 `json:"sellPrice"`
+				UnitId         string  `json:"unitId"`
+				UnitName       string  `json:"unitName"`
+				ItemCategoryId string  `json:"itemCategoryId"`
+			} `json:"comboGroupDetailList"`
+		} `json:"comboGroupList"`
+		SideDishGroupList []struct {
+			SideDishGroupId         string `json:"sideDishGroupId"`
+			SideDishGroupDetailList []struct {
+				SideDishId  int `json:"sideDishId"`
+				SideDishNum int `json:"sideDishNum"`
+			} `json:"sideDishGroupDetailList"`
+		} `json:"sideDishGroupList"`
+		CartItemNoteList []CartItemNote `json:"cartItemNoteList"`
+	} `json:"addItemList"`
+}
+
+// PeriodTime 结构体
+type PeriodTime struct {
+	PeriodId   string `json:"periodId"`
+	PeriodName string `json:"periodName"`
+	StartTime  string `json:"startTime"`
+	EndTime    string `json:"endTime"`
+}
+
+// CookingWayGroup 结构体
+type CookingWayGroup struct {
+	CookingWayGroupId string `json:"cookingWayGroupId"`
+	CookingWayList    []struct {
+		CookingWayId string `json:"cookingWayId"`
+	} `json:"cookingWayList"`
+}
+
+// CartItemNote 结构体
+type CartItemNote struct {
+}
+
+type BookQueryPeriodTimeReq struct {
+	BusinessDate string `json:"businessDate"` // 格式  2025-12-12
+}
+
+type BookQueryOrderReq struct {
+	BookOrderNo      string `json:"bookOrderNo"`
+	OperatorUserId   string `json:"operatorUserId"`
+	OperatorUserName string `json:"operatorUserName"`
+}
+
+type BookQueryTableInfoReq struct {
+	PageNum  int `json:"pageNum"`
+	PageSize int `json:"pageSize"`
+}
+
+type BookConfirmReq struct {
+	OrderNo          string `json:"OrderNo"`
+	OperatorUserId   string `json:"operatorUserId"`
+	OperatorUserName string `json:"operatorUserName"`
+}
+
+type BookCancelReq struct {
+	OrderNo                      string `json:"orderNo"`
+	ShopBookOrderCancelReasonDto struct {
+		ReasonContent string `json:"reasonContent"`
+	} `json:"shopBookOrderCancelReasonDto"`
+	SendMessageFlag  bool   `json:"sendMessageFlag"`
+	OperatorUserId   string `json:"operatorUserId"`
+	OperatorUserName string `json:"operatorUserName"`
+}
+
+type BusinessIncomeReq struct {
+	StatisticsByShop      bool     `json:"statisticsByShop"`
+	OrgStatisticsType     string   `json:"orgStatisticsType"`
+	CouponStatisticalType string   `json:"couponStatisticalType"`
+	StoreStatisticalType  string   `json:"storeStatisticalType"`
+	PeriodType            string   `json:"periodType"`
+	OrderSourceList       []string `json:"orderSourceList"`
+	OrderTypeList         []string `json:"orderTypeList"`
+	DateRange             struct {
+		DateType  string `json:"dateType"`
+		StartDate int64  `json:"startDate"`
+		EndDate   int64  `json:"endDate"`
+	} `json:"dateRange"`
+	PageBean struct {
+		PageNum  int `json:"pageNum"`
+		PageSize int `json:"pageSize"`
+	} `json:"pageBean"`
+	ShopIds   []int  `json:"shopIds"`
+	RequestId string `json:"requestId"`
+}
+
+type BusinessIncomePromoStatisticsReq struct {
+	DateRange struct {
+		DateType  string `json:"dateType"`
+		StartDate int64  `json:"startDate"`
+		EndDate   int64  `json:"endDate"`
+	} `json:"dateRange"`
+	OrderSources []string `json:"orderSources"`
+	OrderTypes   []string `json:"orderTypes"`
+	PromoTypes   []string `json:"promoTypes"`
+	PromoName    string   `json:"promoName"`
+	PageBean     struct {
+		PageNum  int `json:"pageNum"`
+		PageSize int `json:"pageSize"`
+	} `json:"pageBean"`
+	ShopIds []int `json:"shopIds"`
+}
+
+type KposlocalReq struct {
+	RequestId     string         `json:"requestId"`
+	RequestHeader map[string]any `json:"requestHeader"`
+	RequestBody   struct {
+		OrderId        string `json:"orderId"`
+		BusinessFormat string `json:"businessFormat"`
+		SceneCode      string `json:"sceneCode"`
+		CartId         string `json:"cartId"`
+	} `json:"requestBody"`
+}
+
+type KposlocalAddReq struct {
+	RequestId     string         `json:"requestId"`
+	RequestHeader map[string]any `json:"requestHeader"`
+	RequestBody   struct {
+		OrderId               string           `json:"orderId"`
+		BusinessFormat        string           `json:"businessFormat"`
+		SceneCode             string           `json:"sceneCode"`
+		GoodList              []AddItemRequest `json:"goodList"`
+		OperateItemSourceType string           `json:"operateItemSourceType,omitempty"`
+	} `json:"requestBody"`
+}
+
+type AddItemRequest struct {
+	SceneCode               string                `json:"sceneCode,omitempty"`
+	SkuId                   string                `json:"skuId"`
+	SpuId                   string                `json:"SpuId"`
+	TemporaryDishFlag       string                `json:"temporaryDishFlag,omitempty"`
+	MustOrderFlag           string                `json:"mustOrderFlag,omitempty"`
+	ItemName                string                `json:"itemName,omitempty"`
+	ItemType                string                `json:"itemType,omitempty"`
+	ItemExtType             string                `json:"itemExtType,omitempty"`
+	TicketExitIdList        []string              `json:"ticketExitIdList,omitempty"`
+	ItemPriceStr            string                `json:"itemPriceStr,omitempty"`
+	ItemNumStr              float64               `json:"itemNumStr,omitempty"`
+	WeighDishFlag           string                `json:"weighDishFlag,omitempty"`
+	UnitId                  string                `json:"unitId,omitempty"`
+	UnitName                string                `json:"unitName,omitempty"`
+	SecondUnitId            string                `json:"secondUnitId,omitempty"`
+	SecondUnitName          string                `json:"secondUnitName,omitempty"`
+	Weigh                   float64               `json:"weigh,omitempty"`
+	RequisiteCookMethodFlag string                `json:"requisiteCookMethodFlag,omitempty"`
+	RequisiteSideDishFlag   string                `json:"requisiteSideDishFlag,omitempty"`
+	CookAttachGroupList     []CookAttachGroup     `json:"cookAttachGroupList,omitempty"`
+	AddSpiceAttachGroupList []AddSpiceAttachGroup `json:"addSpiceAttachGroupList,omitempty"`
+	ComboGroupList          []ComboGroup          `json:"comboGroupList,omitempty"`
+	OrderUnitId             string                `json:"orderUnitId,omitempty"`
+	OrderUnitName           string                `json:"orderUnitName,omitempty"`
+	OrderUnitNum            float64               `json:"orderUnitNum,omitempty"`
+	DoubleUnitWeighDishFlag string                `json:"doubleUnitWeighDishFlag,omitempty"`
+	CartItemNoteList        []string              `json:"cartItemNoteList,omitempty"`
+	CartItemId              string                `json:"cartItemId,omitempty"`
+	ChangePriceFlag         string                `json:"changePriceFlag,omitempty"`
+	WaitCallFlag            string                `json:"waitCallFlag,omitempty"`
+	PriceType               string                `json:"priceType,omitempty"`
+	CookbookId              string                `json:"cookbookId,omitempty"`
+	CookbookType            string                `json:"cookbookType,omitempty"`
+	MealNum                 float64               `json:"mealNum,omitempty"`
+	SinglePackFlag          string                `json:"singlePackFlag,omitempty"`
+	ItemNoCard              string                `json:"itemNoCard,omitempty"`
+}
+
+type CookAttachGroup struct {
+	CookAttachGroupId string       `json:"cookAttachGroupId"`
+	CookAttachIdList  []CookAttach `json:"cookAttachIdList"`
+}
+
+type CookAttach struct {
+	CookAttachId  string `json:"cookAttachId"`
+	TemporaryFlag string `json:"temporaryFlag"`
+}
+
+type AddSpiceAttachGroup struct {
+	AddSpiceGroupId    string           `json:"addSpiceGroupId"`
+	AddSpiceAttachList []AddSpiceAttach `json:"addSpiceAttachList"`
+}
+type AddSpiceAttach struct {
+	ChildSkuId  string `json:"childSkuId"`
+	ChildNumStr string `json:"childNumStr"`
+}
+
+type ComboGroup struct {
+	ComboGroupId string       `json:"comboGroupId"`
+	ChildSkuList []ComboChild `json:"childSkuList"`
+}
+
+type ComboChild struct {
+	CartItemId                   string                `json:"cartItemId"`
+	ChildWeighFlag               string                `json:"childWeighFlag"`
+	ChildWeighItemPrice          string                `json:"childWeighItemPrice,omitempty"`
+	RequisiteCookMethodFlag      string                `json:"requisiteCookMethodFlag"`
+	ChildSkuId                   string                `json:"childSkuId"`
+	ChildNumStr                  float64               `json:"childNumStr"`
+	CartItemNoteList             []string              `json:"cartItemNoteList"`
+	CookAttachGroupList          []CookAttachGroup     `json:"cookAttachGroupList"`
+	AddSpiceAttachGroups         []AddSpiceAttachGroup `json:"addSpiceAttachGroups"`
+	AlternativeSkuId             string                `josn:"alternativeSkuId,omitempty"`
+	ChildOrderUnitNumStr         float64               `json:"childOrderUnitNumStr,omitempty"`
+	ChildDoubleUnitWeighDishFlag string                `json:"childDoubleUnitWeighDishFlag"`
+	RequisiteSideDishFlag        string                `json:"requisiteSideDishFlag"`
+	SinglePackFlag               string                `json:"singlePackFlag"`
+	WaitCallFlag                 string                `json:"waitCallFlag"`
+	TemporaryDishFlag            string                `json:"temporaryDishFlag,omitempty"`
+	ItemName                     string                `json:"itemName,omitempty"`
+	TicketExitIdList             []string              `json:"ticketExitIdList"`
+	ItemPriceStr                 string                `json:"itemPriceStr,omitempty"`
+	ItemNumStr                   float64               `json:"itemNumStr,omitempty"`
+	WeighDishFlag                string                `json:"weighDishFlag,omitempty"`
+	UnitId                       string                `json:"unitId,omitempty"`
+	UnitName                     string                `json:"unitName,omitempty"`
+	SecondUnitId                 string                `json:"secondUnitId,omitempty"`
+	SecondUnitName               string                `json:"secondUnitName,omitempty"`
+	Weigh                        float64               `json:"weigh,omitempty"`
+}
+
+type KposTableStatusQueryReq struct {
+	PullPosFlag bool   `json:"pullPosFlag"`
+	TableId     string `json:"tableId"`
+}
+
+type KryCommon struct {
+	Uri    string         `json:"uri"`
+	Req    map[string]any `json:"req"`
+	Method string         `json:"method"`
 }

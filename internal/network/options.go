@@ -3,8 +3,9 @@ package network
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/loebfly/keruyun-sdk-go/internal/util"
 	"time"
+
+	"github.com/loebfly/keruyun-sdk-go/internal/util"
 )
 
 const (
@@ -64,6 +65,7 @@ func (receiver *JsonOptions) BodyString() string {
 // GetSignQueryStr 带签名的请求参数
 func (receiver *JsonOptions) GetSignQueryStr() string {
 	query := receiver.Query
+
 	queryStr := ""
 	signStr := ""
 	if _, ok := query[SignPtrAppKey]; ok {
